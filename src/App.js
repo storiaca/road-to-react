@@ -1,26 +1,25 @@
 import React from "react";
 import "./App.css";
 
-const list = [
-  {
-    title: "React",
-    url: "https://reactjs.org",
-    author: "Jordan Walke",
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: "Redux",
-    url: "https://redux.js.org",
-    author: "Dan Abramov, Andrew Clark",
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
-
-function App() {
+const App = () => {
+  const stories = [
+    {
+      title: "React",
+      url: "https://reactjs.org",
+      author: "Jordan Walke",
+      num_comments: 3,
+      points: 4,
+      objectID: 0,
+    },
+    {
+      title: "Redux",
+      url: "https://redux.js.org",
+      author: "Dan Abramov, Andrew Clark",
+      num_comments: 2,
+      points: 5,
+      objectID: 1,
+    },
+  ];
   const handleChange = (event) => {
     console.log(event.target.value);
   };
@@ -30,15 +29,15 @@ function App() {
       <label htmlFor="search">Search: </label>
       <input type="text" id="search" onChange={handleChange} />
       <hr />
-      <List />
+      <List list={stories} />
     </div>
   );
-}
+};
 
-function List() {
+const List = (props) => {
   return (
     <div>
-      {list.map(function (item) {
+      {props.list.map(function (item) {
         return (
           <div key={item.objectID}>
             <span>
@@ -52,6 +51,6 @@ function List() {
       })}
     </div>
   );
-}
+};
 
 export default App;
