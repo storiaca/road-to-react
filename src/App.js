@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
 const App = () => {
@@ -20,7 +20,13 @@ const App = () => {
       objectID: 1,
     },
   ];
-  const [searchTerm, setSearchTerm] = useState("react");
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem("search") || "react"
+  );
+  useEffect(() => {
+    localStorage.setItem("search", searchTerm);
+  }, [searchTerm]);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
