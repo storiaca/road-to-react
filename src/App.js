@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
+const useSemiPersitentState = (key, initialState) => {
+  const [value, setValue] = useState(localStorage.getItem(key) || initialState);
+  useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+  return [value, setValue];
+};
 const App = () => {
   const stories = [
     {
@@ -20,9 +27,8 @@ const App = () => {
       objectID: 1,
     },
   ];
-  const [searchTerm, setSearchTerm] = useState(
-    localStorage.getItem("search") || "react"
-  );
+
+  const [searchTerm, setSearchTerm] = useSemiPersitentState("search", "React");
   useEffect(() => {
     localStorage.setItem("search", searchTerm);
   }, [searchTerm]);
