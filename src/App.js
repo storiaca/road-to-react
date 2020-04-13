@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-const useSemiPersitentState = (key, initialState) => {
+const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
-  useEffect(() => {
+
+  React.useEffect(() => {
     localStorage.setItem(key, value);
   }, [value, key]);
+
   return [value, setValue];
 };
 const App = () => {
@@ -28,7 +30,7 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useSemiPersitentState("search", "React");
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "react");
   useEffect(() => {
     localStorage.setItem("search", searchTerm);
   }, [searchTerm]);
@@ -43,21 +45,25 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search onSearch={handleSearch} search={searchTerm} />
+      <InputWithLabel
+        id="search"
+        label="Search"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      />
       <hr />
       <List list={searchedStories} />
     </div>
   );
 };
 
-const Search = ({ search, onSearch }) => {
-  return (
-    <div>
-      <label htmlFor="search">Search: </label>
-      <input type="text" id="search" value={search} onChange={onSearch} />
-    </div>
-  );
-};
+const InputWithLabel = ({ id, label, value, type = "text", onInputChange }) => (
+  <>
+    <label htmlFor={id}>{label}</label>
+    &nbsp;
+    <input type={type} id={id} value={value} onChange={onInputChange} />
+  </>
+);
 
 const List = ({ list }) =>
   list.map(({ objectID, ...item }) => <Item key={objectID} {...item} />);
