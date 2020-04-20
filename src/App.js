@@ -44,7 +44,6 @@ const storiesReducer = (state, action) => {
   }
 };
 
-// A
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "react");
@@ -54,19 +53,23 @@ const App = () => {
     isError: false,
   });
 
-  useEffect(() => {
+  // A
+  const handleFetchStories = React.useCallback(() => {
     if (!searchTerm) return;
     dispatchStories({ type: "STORIES_FETCH_INIT" });
-    fetch(`${API_ENDPOINT}${searchTerm}`) // B
-      .then((response) => response.json()) // C
+    fetch(`${API_ENDPOINT}${searchTerm}`)
+      .then((response) => response.json())
       .then((result) => {
         dispatchStories({
           type: "STORIES_FETCH_SUCCESS",
-          payload: result.hits, // D
+          payload: result.hits,
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, [searchTerm]);
+  }, [searchTerm]); // E
+  useEffect(() => {
+    handleFetchStories(); // C
+  }, [handleFetchStories]); // D
 
   useEffect(() => {
     localStorage.setItem("search", searchTerm);
