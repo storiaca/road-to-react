@@ -47,17 +47,16 @@ const storiesReducer = (state, action) => {
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "react");
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
   const [stories, dispatchStories] = useReducer(storiesReducer, {
     data: [],
     isLoading: false,
     isError: false,
   });
 
-  // A
   const handleFetchStories = React.useCallback(() => {
-    if (!searchTerm) return;
     dispatchStories({ type: "STORIES_FETCH_INIT" });
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    fetch(url)
       .then((response) => response.json())
       .then((result) => {
         dispatchStories({
@@ -66,17 +65,21 @@ const App = () => {
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, [searchTerm]); // E
+  }, [url]);
   useEffect(() => {
-    handleFetchStories(); // C
-  }, [handleFetchStories]); // D
+    handleFetchStories();
+  }, [handleFetchStories]);
 
   useEffect(() => {
     localStorage.setItem("search", searchTerm);
   }, [searchTerm]);
 
-  const handleSearch = (event) => {
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
   const handleRemoveStory = (item) => {
@@ -85,9 +88,6 @@ const App = () => {
       payload: item,
     });
   };
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm)
-  );
 
   return (
     <div>
@@ -97,10 +97,13 @@ const App = () => {
         label="Search"
         value={searchTerm}
         isFocused
-        onInputChange={handleSearch}
+        onInputChange={handleSearchInput}
       >
         <strong>Search:</strong>
       </InputWithLabel>
+      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
+        Submit
+      </button>
       <hr />
       {stories.isError && <p>Something went wrong ...</p>}
       {stories.isLoading ? (
