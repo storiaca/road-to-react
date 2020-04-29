@@ -1,12 +1,25 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useReducer,
+  useCallback,
+} from "react";
 import axios from "axios";
 import { ReactComponent as Check } from "./check.svg";
 import "./App.css";
 
 const useSemiPersistentState = (key, initialState) => {
+  const isMounted = useRef(false);
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
   React.useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      console.log("A");
+      localStorage.setItem(key, value);
+    }
     localStorage.setItem(key, value);
   }, [value, key]);
 
@@ -47,6 +60,11 @@ const storiesReducer = (state, action) => {
 };
 
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
+
+const getSumComments = (stories) => {
+  console.log("C");
+  return stories.data.reduce((result, value) => result + value.num_comments, 0);
+};
 const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "react");
   const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
@@ -87,16 +105,21 @@ const App = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
-  const handleRemoveStory = (item) => {
+  const handleRemoveStory = useCallback((item) => {
     dispatchStories({
       type: "REMOVE_STORY",
       payload: item,
     });
-  };
+  }, []);
 
+  console.log("B:App");
+
+  const sumComments = React.useMemo(() => getSumComments(stories), [stories]);
   return (
     <div className="container">
-      <h1 className="headline-primary">My Hacker Stories</h1>
+      <h1 className="headline-primary">
+        My Hacker Stories with {sumComments} comments.
+      </h1>
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
@@ -145,10 +168,13 @@ const InputWithLabel = ({
   );
 };
 
-const List = ({ list, onRemoveItem }) =>
-  list.map((item) => (
-    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
-  ));
+const List = React.memo(
+  ({ list, onRemoveItem }) =>
+    console.log("B:List") ||
+    list.map((item) => (
+      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
+    ))
+);
 
 const Item = ({ item, onRemoveItem }) => {
   //const handleRemoveItem = () => onRemoveItem(item);
