@@ -9,7 +9,7 @@ import axios from "axios";
 import { ReactComponent as Check } from "./check.svg";
 import "./App.css";
 
-const useSemiPersistentState = (key, initialState) => {
+const useSemiPersistentState = (key: string, initialState: string) => {
   const isMounted = useRef(false);
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
