@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import axios from "axios";
+
+import List from "./components/List";
+import SearchForm from "./components/SearchForm";
+
 import "./App.css";
 
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
@@ -112,87 +116,4 @@ const App = () => {
   );
 };
 
-const InputWithLabel = ({
-  id,
-  value,
-  type = "text",
-  onInputChange,
-  isFocused,
-  children,
-}) => {
-  const inputRef = useRef();
-
-  useEffect(() => {
-    if (isFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isFocused]);
-  return (
-    <>
-      <label htmlFor={id} className="label">
-        {children}
-      </label>
-      &nbsp;
-      <input
-        ref={inputRef}
-        type={type}
-        id={id}
-        value={value}
-        onChange={onInputChange}
-        className="input"
-      />
-    </>
-  );
-};
-
-const List = ({ list, onRemoveItem }) =>
-  list.map((item) => (
-    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
-  ));
-
-const Item = ({ item, onRemoveItem }) => {
-  //const handleRemoveItem = () => onRemoveItem(item);
-  return (
-    <div className="item">
-      <span style={{ width: "40%" }}>
-        <a href={item.url}>{item.title}</a>
-      </span>
-      <span style={{ width: "30%" }}>{item.author}</span>
-      <span style={{ width: "10%" }}>{item.num_comments}</span>
-      <span style={{ width: "10%" }}>{item.points}</span>
-      <span style={{ width: "10%" }}>
-        <button
-          type="button"
-          onClick={() => onRemoveItem(item)}
-          className="button button_small"
-        >
-          Dismiss
-        </button>
-      </span>
-    </div>
-  );
-};
-
-const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
-  <form onSubmit={onSearchSubmit} className="search-form">
-    <InputWithLabel
-      id="search"
-      label="Search"
-      value={searchTerm}
-      isFocused
-      onInputChange={onSearchInput}
-    >
-      <strong>Search:</strong>
-    </InputWithLabel>
-    <button
-      type="submit"
-      disabled={!searchTerm}
-      className="button button_large"
-    >
-      Submit
-    </button>
-  </form>
-);
-
 export default App;
-export { SearchForm, InputWithLabel, List, Item };
