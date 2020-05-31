@@ -11,7 +11,7 @@ const SORTS = {
   POINT: (list) => sortBy(list, "points").reverse(),
 };
 const List = ({ list, onRemoveItem }) => {
-  const [sort, setSort] = useState("NONE");
+  const [sort, setSort] = useState({ sortKey: "NONE", isReverse: false });
 
   const handleSort = (sortKey) => {
     setSort(sortKey);
