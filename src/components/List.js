@@ -14,11 +14,15 @@ const List = ({ list, onRemoveItem }) => {
   const [sort, setSort] = useState({ sortKey: "NONE", isReverse: false });
 
   const handleSort = (sortKey) => {
-    setSort(sortKey);
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+
+    setSort({ sortKey, isReverse });
   };
 
-  const sortFunctions = SORTS[sort];
-  const sortedList = sortFunctions(list);
+  const sortFunctions = SORTS[sort.sortKey];
+  const sortedList = sort.isReverse
+    ? sortFunctions(list).reverse()
+    : sortFunctions(list);
 
   return (
     <div>
